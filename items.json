@@ -1,0 +1,122 @@
+[
+  {
+    "name": "Printer paper",
+    "unit": "reams",
+    "target": 5
+  },
+  {
+    "name": "Trash bags",
+    "unit": "box (2 rolls)",
+    "target": 1
+  },
+  {
+    "name": "Toilet bleach",
+    "unit": "bottles",
+    "target": 2
+  },
+  {
+    "name": "Manila folders (straight-cut, full-width tab)",
+    "unit": "boxes",
+    "target": 2
+  },
+  {
+    "name": "Standard staples",
+    "unit": "boxes",
+    "target": 1
+  },
+  {
+    "name": "Sticky notes",
+    "unit": "pads",
+    "target": 5
+  },
+  {
+    "name": "Water",
+    "unit": "cases",
+    "target": 5
+  },
+  {
+    "name": "Coffee (K-cups)",
+    "unit": "boxes",
+    "target": 1
+  },
+  {
+    "name": "Toilet paper",
+    "unit": "rolls",
+    "target": 6
+  },
+  {
+    "name": "Paper towels",
+    "unit": "rolls",
+    "target": 6
+  },
+  {
+    "name": "Hand soap",
+    "unit": "bottles",
+    "target": 1
+  },
+  {
+    "name": "Banker boxes",
+    "unit": "boxes",
+    "target": 4
+  },
+  {
+    "name": "Water (gallon jugs)",
+    "unit": "gallons",
+    "target": 3
+  },
+  {
+    "name": "Spray bleach",
+    "unit": "bottles",
+    "target": 1
+  },
+  {
+    "name": "Lysol spray",
+    "unit": "cans",
+    "target": 1
+  },
+  {
+    "name": "HP 972X High Yield Cyan PageWide cartridge",
+    "unit": "cartridge",
+    "target": 1
+  },
+  {
+    "name": "HP 972X High Yield Magenta PageWide cartridge",
+    "unit": "cartridge",
+    "target": 1
+  },
+  {
+    "name": "HP 972X High Yield Yellow PageWide cartridge",
+    "unit": "cartridge",
+    "target": 1
+  },
+  {
+    "name": "HP 972X High Yield Black PageWide cartridge",
+    "unit": "cartridge",
+    "target": 1
+  },
+  {
+    "name": "Plastic spoons (Perk, medium weight)",
+    "unit": "boxes",
+    "target": 1
+  },
+  {
+    "name": "Plastic forks (Perk, medium weight)",
+    "unit": "boxes",
+    "target": 1
+  },
+  {
+    "name": "Paper plates",
+    "unit": "packs",
+    "target": 1
+  },
+  {
+    "name": "Paper bowls",
+    "unit": "packs",
+    "target": 1
+  },
+  {
+    "name": "Disposable coffee cups (Hefty 16 oz hot cups w/ lids, 20 ct)",
+    "unit": "pack (20 cups)",
+    "target": 1
+  }
+]

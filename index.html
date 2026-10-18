@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Office Supply Count</title>
+<style>
+  :root {
+    --bg: #f4f7f6;
+    --card: #ffffff;
+    --text: #102a2a;
+    --muted: #5b6e6e;
+    --teal: #0f766e;
+    --teal-dark: #0b5a54;
+    --order: #c2410c;
+    --order-bg: #fff7ed;
+    --border: #d7e3e1;
+    --shadow: 0 1px 3px rgba(16,42,42,.08);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  body { padding: 12px 12px calc(24px + env(safe-area-inset-bottom)); max-width: 640px; margin: 0 auto; }
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: linear-gradient(180deg, #f4f7f6 70%, rgba(244,247,246,0));
+    padding: 8px 0 14px;
+  }
+  h1 { font-size: 1.35rem; margin: 0 0 4px; letter-spacing: -0.02em; }
+  .sub { color: var(--muted); font-size: .92rem; margin: 0 0 12px; }
+  .toolbar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  button {
+    appearance: none; border: none; border-radius: 12px;
+    font-size: 1rem; font-weight: 600; padding: 12px 10px;
+    min-height: 48px; cursor: pointer;
+  }
+  .btn-primary { background: var(--teal); color: #fff; }
+  .btn-primary:active { background: var(--teal-dark); }
+  .btn-secondary { background: #e7f1ef; color: var(--teal-dark); }
+  .btn-danger { background: #fee2e2; color: #991b1b; }
+  .toast {
+    display: none; margin-top: 10px; padding: 10px 12px; border-radius: 10px;
+    background: #ecfdf5; color: #065f46; font-size: .95rem; font-weight: 600;
+  }
+  .toast.show { display: block; }
+  .list { display: flex; flex-direction: column; gap: 10px; }
+  .row {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 12px 12px 10px;
+  }
+  .row.order { border-color: #fdba74; background: var(--order-bg); }
+  .row-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+  .name { font-size: 1.05rem; font-weight: 700; line-height: 1.25; }
+  .meta { color: var(--muted); font-size: .88rem; margin-top: 3px; }
+  .flag {
+    flex: 0 0 auto; font-size: .82rem; font-weight: 800; color: var(--order);
+    background: #ffedd5; border-radius: 999px; padding: 6px 10px; white-space: nowrap;
+    min-height: 32px; display: none; align-items: center;
+  }
+  .row.order .flag { display: inline-flex; }
+  .controls {
+    display: grid; grid-template-columns: 56px 1fr 56px; gap: 8px; margin-top: 12px; align-items: center;
+  }
+  .step {
+    background: var(--teal); color: #fff; font-size: 1.6rem; font-weight: 700;
+    border-radius: 12px; min-height: 52px; line-height: 1;
+  }
+  .step:active { background: var(--teal-dark); }
+  input[type="number"] {
+    width: 100%; min-height: 52px; border: 2px solid var(--border); border-radius: 12px;
+    font-size: 1.35rem; font-weight: 700; text-align: center; color: var(--text);
+    background: #fff; -moz-appearance: textfield;
+  }
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type="number"]:focus { outline: none; border-color: var(--teal); }
+  footer { margin-top: 18px; color: var(--muted); font-size: .8rem; text-align: center; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Office Supply Count</h1>
+    <p class="sub">Enter today’s counts. Saved on this phone only.</p>
+    <div class="toolbar">
+      <button type="button" class="btn-primary" id="shareBtn">Share</button>
+      <button type="button" class="btn-secondary" id="copyBtn">Copy summary</button>
+      <button type="button" class="btn-danger" id="clearBtn">Clear</button>
+    </div>
+    <div class="toast" id="toast" role="status"></div>
+  </header>
+  <main class="list" id="list"></main>
+  <footer>Counts stay in this browser. Nothing is uploaded.</footer>
+<script>
+const ITEMS = [{"name": "Printer paper", "unit": "reams", "target": 5}, {"name": "Trash bags", "unit": "box (2 rolls)", "target": 1}, {"name": "Toilet bleach", "unit": "bottles", "target": 2}, {"name": "Manila folders (straight-cut, full-width tab)", "unit": "boxes", "target": 2}, {"name": "Standard staples", "unit": "boxes", "target": 1}, {"name": "Sticky notes", "unit": "pads", "target": 5}, {"name": "Water", "unit": "cases", "target": 5}, {"name": "Coffee (K-cups)", "unit": "boxes", "target": 1}, {"name": "Toilet paper", "unit": "rolls", "target": 6}, {"name": "Paper towels", "unit": "rolls", "target": 6}, {"name": "Hand soap", "unit": "bottles", "target": 1}, {"name": "Banker boxes", "unit": "boxes", "target": 4}, {"name": "Water (gallon jugs)", "unit": "gallons", "target": 3}, {"name": "Spray bleach", "unit": "bottles", "target": 1}, {"name": "Lysol spray", "unit": "cans", "target": 1}, {"name": "HP 972X High Yield Cyan PageWide cartridge", "unit": "cartridge", "target": 1}, {"name": "HP 972X High Yield Magenta PageWide cartridge", "unit": "cartridge", "target": 1}, {"name": "HP 972X High Yield Yellow PageWide cartridge", "unit": "cartridge", "target": 1}, {"name": "HP 972X High Yield Black PageWide cartridge", "unit": "cartridge", "target": 1}, {"name": "Plastic spoons (Perk, medium weight)", "unit": "boxes", "target": 1}, {"name": "Plastic forks (Perk, medium weight)", "unit": "boxes", "target": 1}, {"name": "Paper plates", "unit": "packs", "target": 1}, {"name": "Paper bowls", "unit": "packs", "target": 1}, {"name": "Disposable coffee cups (Hefty 16 oz hot cups w/ lids, 20 ct)", "unit": "pack (20 cups)", "target": 1}];
+const STORAGE_KEY = 'office-supply-count-v1';
+
+function loadCounts() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; }
+  catch { return {}; }
+}
+function saveCounts(counts) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(counts));
+}
+
+const counts = loadCounts();
+const list = document.getElementById('list');
+const toast = document.getElementById('toast');
+let toastTimer;
+
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+function shortfall(item, value) {
+  if (value === '' || value === null || Number.isNaN(value)) return null;
+  const n = Number(value);
+  const t = Number(item.target);
+  if (Number.isNaN(t)) return null;
+  if (n < t) return t - n;
+  return null;
+}
+
+function updateFlag(rowEl, item, value) {
+  const short = shortfall(item, value);
+  const flag = rowEl.querySelector('.flag');
+  if (short !== null) {
+    rowEl.classList.add('order');
+    flag.textContent = short === 1 ? 'Order · 1 short' : `Order · ${short} short`;
+  } else {
+    rowEl.classList.remove('order');
+    flag.textContent = '';
+  }
+}
+
+function setCount(id, value) {
+  if (value === '' || value === null) delete counts[id];
+  else counts[id] = value;
+  saveCounts(counts);
+}
+
+ITEMS.forEach((item, idx) => {
+  const id = String(idx);
+  const row = document.createElement('section');
+  row.className = 'row';
+  row.dataset.id = id;
+  row.innerHTML = `
+    <div class="row-top">
+      <div>
+        <div class="name"></div>
+        <div class="meta"></div>
+      </div>
+      <div class="flag" aria-live="polite"></div>
+    </div>
+    <div class="controls">
+      <button type="button" class="step minus" aria-label="Decrease">−</button>
+      <input type="number" inputmode="numeric" min="0" step="1" aria-label="Today count">
+      <button type="button" class="step plus" aria-label="Increase">+</button>
+    </div>`;
+  row.querySelector('.name').textContent = item.name;
+  row.querySelector('.meta').textContent = `Unit: ${item.unit} · Target: ${item.target}`;
+  const input = row.querySelector('input');
+  if (Object.prototype.hasOwnProperty.call(counts, id) && counts[id] !== '' && counts[id] !== null) {
+    input.value = counts[id];
+  }
+  updateFlag(row, item, input.value === '' ? null : Number(input.value));
+
+  input.addEventListener('input', () => {
+    let v = input.value;
+    if (v === '') { setCount(id, ''); updateFlag(row, item, null); return; }
+    v = Math.max(0, Math.floor(Number(v)));
+    if (Number.isNaN(v)) { input.value = ''; setCount(id, ''); updateFlag(row, item, null); return; }
+    input.value = v;
+    setCount(id, v);
+    updateFlag(row, item, v);
+  });
+  row.querySelector('.minus').addEventListener('click', () => {
+    const cur = input.value === '' ? 0 : Number(input.value);
+    const next = Math.max(0, (Number.isNaN(cur) ? 0 : cur) - 1);
+    input.value = next;
+    setCount(id, next);
+    updateFlag(row, item, next);
+  });
+  row.querySelector('.plus').addEventListener('click', () => {
+    const cur = input.value === '' ? 0 : Number(input.value);
+    const next = (Number.isNaN(cur) ? 0 : cur) + 1;
+    input.value = next;
+    setCount(id, next);
+    updateFlag(row, item, next);
+  });
+  list.appendChild(row);
+});
+
+function buildSummary() {
+  const today = new Date();
+  const dateStr = today.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  const lines = [];
+  const below = [];
+  ITEMS.forEach((item, idx) => {
+    const id = String(idx);
+    const raw = counts[id];
+    const has = raw !== undefined && raw !== null && raw !== '';
+    const countLabel = has ? String(raw) : '—';
+    lines.push(`${item.name}: ${countLabel} (target ${item.target})`);
+    if (has) {
+      const short = shortfall(item, Number(raw));
+      if (short !== null) below.push(`${item.name} (${short} short)`);
+    }
+  });
+  lines.push('');
+  lines.push(below.length ? `Below target: ${below.join('; ')}` : 'Below target: none');
+  lines.push(`Date: ${dateStr}`);
+  return lines.join('\n');
+}
+
+async function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    await navigator.clipboard.writeText(text);
+    return true;
+  }
+  const ta = document.createElement('textarea');
+  ta.value = text; document.body.appendChild(ta); ta.select();
+  const ok = document.execCommand('copy');
+  document.body.removeChild(ta);
+  return ok;
+}
+
+document.getElementById('copyBtn').addEventListener('click', async () => {
+  const text = buildSummary();
+  try {
+    await copyText(text);
+    showToast('Summary copied');
+  } catch {
+    showToast('Could not copy');
+  }
+});
+
+document.getElementById('shareBtn').addEventListener('click', async () => {
+  const text = buildSummary();
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'Office Supply Count', text });
+      showToast('Shared');
+      return;
+    } catch (err) {
+      if (err && err.name === 'AbortError') return;
+    }
+  }
+  try {
+    await copyText(text);
+    showToast('Share unavailable — summary copied');
+  } catch {
+    showToast('Could not share or copy');
+  }
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if (!confirm('Clear all counts on this phone?')) return;
+  Object.keys(counts).forEach(k => delete counts[k]);
+  saveCounts(counts);
+  document.querySelectorAll('.row').forEach((row, idx) => {
+    const input = row.querySelector('input');
+    input.value = '';
+    updateFlag(row, ITEMS[idx], null);
+  });
+  showToast('Counts cleared');
+});
+</script>
+</body>
+</html>
