@@ -32,7 +32,7 @@
   {
     "name": "Water",
     "unit": "cases",
-    "target": 5
+    "target": 2
   },
   {
     "name": "Coffee (K-cups)",
@@ -115,8 +115,8 @@
     "target": 1
   },
   {
-    "name": "Disposable coffee cups (Hefty 16 oz hot cups w/ lids, 20 ct)",
-    "unit": "pack (20 cups)",
+    "name": "Disposable coffee cups (16 oz hot cups, no lids)",
+    "unit": "pack",
     "target": 1
   }
 ]
